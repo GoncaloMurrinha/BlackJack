@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from PIL import Image, ImageTk
 import random
 import pygame
@@ -10,48 +11,60 @@ class BlackjackGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Blackjack")
+        self.root.configure(bg="#0b5123")
+        self.root.resizable(False, False)
         self.deck = []
         self.player_hand = []
         self.dealer_hand = []
         self.balance = 1000
         self.current_bet = 100
 
-        self.canvas = tk.Canvas(root, width=800, height=600, bg="#0b5123")
-        self.canvas.pack()
-
-        self.dealer_frame = tk.Frame(root, bg="#0b5123")
-        self.canvas.create_window(400, 100, window=self.dealer_frame)
-        self.dealer_label = tk.Label(root, text="Dealer", bg="#0b5123", fg="white", font=("Arial", 14, "bold"))
-        self.canvas.create_window(400, 50, window=self.dealer_label)
-
-        self.player_frame = tk.Frame(root, bg="#0b5123")
-        self.canvas.create_window(400, 350, window=self.player_frame)
-        self.player_label = tk.Label(root, text="You", bg="#0b5123", fg="white", font=("Arial", 14, "bold"))
-        self.canvas.create_window(400, 300, window=self.player_label)
-
-        self.status = tk.Label(root, text="Click 'New Game' to start", bg="#0b5123", fg="white")
-        self.canvas.create_window(400, 420, window=self.status)
-
-        self.balance_label = tk.Label(root, text=f"Balance: ${self.balance}", bg="#0b5123", fg="white", font=("Arial", 12))
-        self.canvas.create_window(400, 450, window=self.balance_label)
-
-        self.btn_new_game = tk.Button(root, text="New Game", command=self.new_game)
-        self.canvas.create_window(400, 500, window=self.btn_new_game)
-
-        self.btn_hit = tk.Button(root, text="Hit", command=self.hit, state=tk.DISABLED)
-        self.canvas.create_window(300, 550, window=self.btn_hit)
-
-        self.btn_stand = tk.Button(root, text="Stand", command=self.stand, state=tk.DISABLED)
-        self.canvas.create_window(500, 550, window=self.btn_stand)
-
         self.images = {}
-        self.card_back_image = self.load_image("back")  # carta de costas
+        self.card_back_image = self.load_image("back")
 
-        self.dealer_points = tk.Label(root, text="", bg="#0b5123", fg="white", font=("Arial", 12))
-        self.canvas.create_window(700, 100, window=self.dealer_points)
+        # Title
+        title = tk.Label(root, text="BLACKJACK", font=("Arial", 24, "bold"), fg="white", bg="#0b5123")
+        title.pack(pady=10)
 
-        self.player_points = tk.Label(root, text="", bg="#0b5123", fg="white", font=("Arial", 12))
-        self.canvas.create_window(700, 350, window=self.player_points)
+        # Dealer
+        self.dealer_frame = tk.Frame(root, bg="#0b5123")
+        self.dealer_frame.pack(pady=10)
+        self.dealer_label = tk.Label(root, text="Dealer", font=("Arial", 14, "bold"), fg="white", bg="#0b5123")
+        self.dealer_label.pack()
+        self.dealer_points = tk.Label(root, text="", font=("Arial", 12), fg="white", bg="#0b5123")
+        self.dealer_points.pack()
+
+        # Separator
+        ttk.Separator(root, orient="horizontal").pack(fill="x", padx=40, pady=5)
+
+        # Player
+        self.player_label = tk.Label(root, text="You", font=("Arial", 14, "bold"), fg="white", bg="#0b5123")
+        self.player_label.pack()
+        self.player_frame = tk.Frame(root, bg="#0b5123")
+        self.player_frame.pack(pady=10)
+        self.player_points = tk.Label(root, text="", font=("Arial", 12), fg="white", bg="#0b5123")
+        self.player_points.pack()
+
+        # Status
+        self.status = tk.Label(root, text="Click 'New Game' to start", font=("Arial", 12), fg="white", bg="#0b5123")
+        self.status.pack(pady=5)
+
+        # Balance
+        self.balance_label = tk.Label(root, text=f"Balance: ${self.balance}", font=("Arial", 12), fg="white", bg="#0b5123")
+        self.balance_label.pack()
+
+        # Buttons
+        button_frame = tk.Frame(root, bg="#0b5123")
+        button_frame.pack(pady=20)
+
+        self.btn_new_game = ttk.Button(button_frame, text="New Game", command=self.new_game)
+        self.btn_new_game.grid(row=0, column=0, padx=10)
+
+        self.btn_hit = ttk.Button(button_frame, text="Hit", command=self.hit, state=tk.DISABLED)
+        self.btn_hit.grid(row=0, column=1, padx=10)
+
+        self.btn_stand = ttk.Button(button_frame, text="Stand", command=self.stand, state=tk.DISABLED)
+        self.btn_stand.grid(row=0, column=2, padx=10)
 
     def update_points_labels(self, reveal_dealer=False):
         player_score = self.calculate_score(self.player_hand)
@@ -222,7 +235,7 @@ class BlackjackGUI:
                 self.play_sound('flipcard.wav', duration_ms=500)
                 self.show_hand(self.dealer_frame, self.dealer_hand)
                 self.update_points_labels(reveal_dealer=True)
-                self.root.after(800, dealer_turn)  # delay entre as cartas
+                self.root.after(800, dealer_turn)
             else:
                 self.finish_round()
 
@@ -246,7 +259,6 @@ class BlackjackGUI:
         self.balance_label.config(text=f"Balance: ${self.balance}")
         self.btn_hit.config(state=tk.DISABLED)
         self.btn_stand.config(state=tk.DISABLED)
-
 
     def reveal_dealer(self):
         self.show_hand(self.dealer_frame, self.dealer_hand)
